@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.util.List;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
@@ -32,8 +34,13 @@ class HotelDocumentTest {
     @Autowired
     private IHotelService hotelService;
 
+    /**
+     * 添加文档
+     *
+     * @throws IOException
+     */
     @Test
-    void testAddDocument() throws IOException {
+    public void testAddDocument() throws IOException {
         // 1.查询数据库hotel数据
         Hotel hotel = hotelService.getById(61083L);
         // 2.转换为HotelDoc
@@ -46,12 +53,20 @@ class HotelDocumentTest {
         // 2.准备请求参数DSL，其实就是文档的JSON字符串
         request.source(json, XContentType.JSON);
         // 3.发送请求
-        client.index(request, RequestOptions.DEFAULT);
+        IndexResponse indexResponse = client.index(request, RequestOptions.DEFAULT);
+        assert indexResponse != null;
+        System.out.println(indexResponse);
+        // https://cdn.jsdelivr.net/gh/Rimecoxu/pic-gallery@master/2025/202510191617364.png
     }
 
+    /**
+     * 查询文档
+     *
+     * @throws IOException
+     */
     @Test
-    void testGetDocumentById() throws IOException {
-        // 1.准备Request      // GET /hotel/_doc/{id}
+    public void testGetDocumentById() throws IOException {
+        // 1.准备Request：GET /hotel/_doc/{id}
         GetRequest request = new GetRequest("hotel", "61083");
         // 2.发送请求
         GetResponse response = client.get(request, RequestOptions.DEFAULT);
@@ -59,35 +74,51 @@ class HotelDocumentTest {
         String json = response.getSourceAsString();
 
         HotelDoc hotelDoc = JSON.parseObject(json, HotelDoc.class);
-        System.out.println("hotelDoc = " + hotelDoc);
+        System.out.println(hotelDoc);
     }
 
+    /**
+     * 删除文档
+     *
+     * @throws IOException
+     */
     @Test
-    void testDeleteDocumentById() throws IOException {
+    public void testDeleteDocumentById() throws IOException {
         // 1.准备Request      // DELETE /hotel/_doc/{id}
         DeleteRequest request = new DeleteRequest("hotel", "61083");
         // 2.发送请求
         client.delete(request, RequestOptions.DEFAULT);
     }
 
+    /**
+     * 修改文档
+     *
+     * @throws IOException
+     */
     @Test
-    void testUpdateById() throws IOException {
+    public void testUpdateById() throws IOException {
         // 1.准备Request
         UpdateRequest request = new UpdateRequest("hotel", "61083");
         // 2.准备参数
         request.doc(
-                "price", "870"
+                "price", "870",
+                "starName", "100钻"
         );
         // 3.发送请求
         client.update(request, RequestOptions.DEFAULT);
     }
 
+    /**
+     * 批量添加文档
+     *
+     * @throws IOException
+     */
     @Test
-    void testBulkRequest() throws IOException {
+    public void testBulkRequest() throws IOException {
         // 查询所有的酒店数据
         List<Hotel> list = hotelService.list();
 
-        // 1.准备Request
+        // 1.准备Request : final List<DocWriteRequest<?>> requests = new ArrayList();
         BulkRequest request = new BulkRequest();
         // 2.准备参数
         for (Hotel hotel : list) {
@@ -100,18 +131,19 @@ class HotelDocumentTest {
         }
 
         // 3.发送请求
-        client.bulk(request, RequestOptions.DEFAULT);
+        BulkResponse bulkItemResponses = client.bulk(request, RequestOptions.DEFAULT);
+        System.out.println(bulkItemResponses);
     }
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         client = new RestHighLevelClient(RestClient.builder(
                 HttpHost.create("http://192.168.99.99:9200")
         ));
     }
 
     @AfterEach
-    void tearDown() throws IOException {
+    public void tearDown() throws IOException {
         client.close();
     }
 

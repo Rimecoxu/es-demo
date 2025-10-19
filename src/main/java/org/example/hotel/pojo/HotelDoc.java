@@ -28,6 +28,7 @@ public class HotelDoc {
         this.city = hotel.getCity();
         this.starName = hotel.getStarName();
         this.business = hotel.getBusiness();
+        // 数据库数据转换为索引库数据
         this.location = hotel.getLatitude() + ", " + hotel.getLongitude();
         this.pic = hotel.getPic();
     }
