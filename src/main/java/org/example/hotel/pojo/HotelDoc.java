@@ -17,6 +17,8 @@ public class HotelDoc {
     private String business;
     private String location;
     private String pic;
+    private Object distance;
+    private Boolean isAD;
 
     public HotelDoc(Hotel hotel) {
         this.id = hotel.getId();
@@ -31,5 +33,13 @@ public class HotelDoc {
         // 数据库数据转换为索引库数据
         this.location = hotel.getLatitude() + ", " + hotel.getLongitude();
         this.pic = hotel.getPic();
+    }
+
+    public void setDistance(Object distance) {
+        this.distance = distance;
+    }
+
+    public Object getDistance() {
+        return distance;
     }
 }

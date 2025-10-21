@@ -8,7 +8,8 @@
         </encoder>
     </appender>
 
-    <root level="info">
+    <root level="INFO">
         <appender-ref ref="consoleLog"/>
     </root>
+    <logger name="org.example.hotel" level="INFO"/>
 </configuration>
