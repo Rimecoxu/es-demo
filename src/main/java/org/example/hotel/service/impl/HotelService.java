@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,10 @@ import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.example.hotel.mapper.HotelMapper;
@@ -145,5 +151,44 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
             return hotelDoc;
         }).collect(Collectors.toList());
         return new PageResult(total, hotels);
+    }
+
+    @Override
+    public Map<String, List<String>> filters(RequestParams params) throws IOException {
+        Map<String, List<String>> map = new HashMap<>();
+
+        SearchRequest request = new SearchRequest("hotel");
+
+        // 基于查询结果进行聚合
+        buildBasicQuery(params, request);
+
+        buildAggregations(request);
+
+        SearchResponse searchResponse = restHighLevelClient.search(request, RequestOptions.DEFAULT);
+        Aggregations aggregations = searchResponse.getAggregations();
+
+        Terms terms = aggregations.get("brand_agg");
+        List<? extends Terms.Bucket> buckets = terms.getBuckets();
+        List<String> brandList = buckets.stream().map(MultiBucketsAggregation.Bucket::getKeyAsString).collect(Collectors.toList());
+        map.put("brand", brandList);
+
+        terms = aggregations.get("starName_agg");
+        buckets = terms.getBuckets();
+        List<String> starNameList = buckets.stream().map(MultiBucketsAggregation.Bucket::getKeyAsString).collect(Collectors.toList());
+        map.put("starName", starNameList);
+
+        terms = aggregations.get("city_agg");
+        buckets = terms.getBuckets();
+        List<String> cityList = buckets.stream().map(MultiBucketsAggregation.Bucket::getKeyAsString).collect(Collectors.toList());
+        map.put("city", cityList);
+
+        return map;
+    }
+
+
+    public void buildAggregations(SearchRequest request) {
+        request.source().aggregation(AggregationBuilders.terms("brand_agg").field("brand").size(30));
+        request.source().aggregation(AggregationBuilders.terms("city_agg").field("city").size(30));
+        request.source().aggregation(AggregationBuilders.terms("starName_agg").field("starName").size(30));
     }
 }

@@ -961,7 +961,6 @@
      * Augment an target Object or Array by defining
      * hidden properties.
      */
-
     /* istanbul ignore next */
     function copyAugment(target, src, keys) {
         for (var i = 0, l = keys.length; i < l; i++) {
@@ -1543,7 +1542,6 @@
             var strat = strats[key] || defaultStrat;
             options[key] = strat(parent[key], child[key], vm, key);
         }
-
         return options
     }
 
@@ -2102,7 +2100,6 @@
                 return fns.apply(null, arguments)
             }
         }
-
         invoker.fns = fns;
         return invoker
     }
@@ -2547,7 +2544,6 @@
                 vm.$off(event, on);
                 fn.apply(vm, arguments);
             }
-
             on.fn = fn;
             vm.$on(event, on);
             return vm

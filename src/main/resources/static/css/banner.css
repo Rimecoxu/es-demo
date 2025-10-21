@@ -35,7 +35,6 @@
     -webkit-user-select: none;
     user-select: none;
 }
-
 .on {
     color: #fff;
     display: none;
@@ -94,7 +93,6 @@
 .logo span {
     width: 80px;
 }
-
 .logo-ch {
     line-height: 26px;
     font-size: 14px;
@@ -102,7 +100,6 @@
     font-weight: bold;
     font-family: "Helvetica Neue", "Arial", "PingFang SC", "Microsoft Yahei", "SimSun", sans-serif;
 }
-
 .logo-en {
     line-height: 14px;
     font-size: 8px;

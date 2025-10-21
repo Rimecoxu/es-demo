@@ -1,5 +1,8 @@
 package org.example.hotel.web;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Resource;
 import org.example.hotel.pojo.PageResult;
 import org.example.hotel.pojo.RequestParams;
@@ -19,5 +22,10 @@ public class HotelController {
     @PostMapping("/list")
     public PageResult search(@RequestBody RequestParams params) {
         return hotelService.search(params);
+    }
+
+    @PostMapping("/filters")
+    public Map<String, List<String>> filters(@RequestBody RequestParams params) throws IOException {
+        return hotelService.filters(params);
     }
 }
