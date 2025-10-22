@@ -11,3 +11,10 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
   type-aliases-package: org.example.hotel.pojo
+
+rocketmq:
+  push-consumer:
+    endpoints: 192.168.99.99:8081
+    tag: '*'
+    #    设置请求超时时间，默认3s无结果即超时
+    request-timeout: 60

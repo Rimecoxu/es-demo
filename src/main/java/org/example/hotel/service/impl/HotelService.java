@@ -13,12 +13,17 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.unit.DistanceUnit;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
@@ -208,6 +213,42 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         Suggest suggest = searchResponse.getSuggest();
         CompletionSuggestion mySuggest = suggest.getSuggestion("mySuggest");
         return mySuggest.getOptions().stream().map(option -> option.getText().toString()).collect(Collectors.toList());
+    }
+
+    @Override
+    public void save(Long id) {
+        // 1.查询数据库hotel数据
+        Hotel hotel = getById(id);
+        // 2.转换为HotelDoc
+        HotelDoc hotelDoc = new HotelDoc(hotel);
+        // 3.转JSON
+        String json = JSON.toJSONString(hotelDoc);
+
+        // 1.准备Request
+        IndexRequest request = new IndexRequest("hotel").id(hotelDoc.getId().toString());
+        // 2.准备请求参数DSL，其实就是文档的JSON字符串
+        request.source(json, XContentType.JSON);
+        // 3.发送请求
+        IndexResponse indexResponse;
+        try {
+            indexResponse = restHighLevelClient.index(request, RequestOptions.DEFAULT);
+            log.info("新增结果：{}", indexResponse.getResult());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void del(Long id) {
+        // 1.准备Request
+        DeleteRequest request = new DeleteRequest("hotel", String.valueOf(id));
+        // 2.发送请求
+        try {
+            DeleteResponse deleteResponse = restHighLevelClient.delete(request, RequestOptions.DEFAULT);
+            log.info("删除结果：{}", deleteResponse.getResult());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

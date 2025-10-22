@@ -4,6 +4,7 @@ package org.example.hotel;
 import com.alibaba.fastjson.JSON;
 import java.io.IOException;
 import java.util.Map;
+import javax.annotation.Resource;
 import org.apache.http.HttpHost;
 import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.action.search.SearchRequest;
@@ -30,6 +31,7 @@ import org.springframework.util.CollectionUtils;
 @SpringBootTest
 class HotelDocumentSearchTest {
 
+    @Resource
     private RestHighLevelClient client;
 
 

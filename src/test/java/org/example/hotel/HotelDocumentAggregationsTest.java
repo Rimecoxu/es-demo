@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -28,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class HotelDocumentAggregationsTest {
 
+    @Resource
     private RestHighLevelClient client;
 
 

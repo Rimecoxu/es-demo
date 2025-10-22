@@ -4,6 +4,7 @@ package org.example.hotel;
 import com.alibaba.fastjson.JSON;
 import java.io.IOException;
 import java.util.List;
+import javax.annotation.Resource;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -29,6 +30,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class HotelDocumentTest {
 
+    @Resource
     private RestHighLevelClient client;
 
     @Autowired
@@ -67,7 +69,7 @@ class HotelDocumentTest {
     @Test
     public void testGetDocumentById() throws IOException {
         // 1.准备Request：GET /hotel/_doc/{id}
-        GetRequest request = new GetRequest("hotel", "61083");
+        GetRequest request = new GetRequest("hotel", "56977");
         // 2.发送请求
         GetResponse response = client.get(request, RequestOptions.DEFAULT);
         // 3.解析响应结果

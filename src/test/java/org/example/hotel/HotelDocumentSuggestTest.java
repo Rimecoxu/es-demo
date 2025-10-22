@@ -1,6 +1,7 @@
 package org.example.hotel;
 
 import java.io.IOException;
+import javax.annotation.Resource;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -24,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class HotelDocumentSuggestTest {
 
+    @Resource
     private RestHighLevelClient client;
 
     /**

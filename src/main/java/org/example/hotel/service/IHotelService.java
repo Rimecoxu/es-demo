@@ -35,4 +35,18 @@ public interface IHotelService extends IService<Hotel> {
      * @return 补全建议
      */
     List<String> suggestion(String prefix) throws IOException;
+
+    /**
+     * 新增hotel数据
+     *
+     * @param id 主键id
+     */
+    void save(Long id);
+
+    /**
+     * 删除hotel数据
+     *
+     * @param id 主键id
+     */
+    void del(Long id);
 }
