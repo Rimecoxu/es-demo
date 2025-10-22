@@ -7,9 +7,11 @@ import javax.annotation.Resource;
 import org.example.hotel.pojo.PageResult;
 import org.example.hotel.pojo.RequestParams;
 import org.example.hotel.service.IHotelService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,5 +29,10 @@ public class HotelController {
     @PostMapping("/filters")
     public Map<String, List<String>> filters(@RequestBody RequestParams params) throws IOException {
         return hotelService.filters(params);
+    }
+
+    @GetMapping("/suggestion")
+    public List<String> suggestion(@RequestParam("key") String prefix) throws IOException {
+        return hotelService.suggestion(prefix);
     }
 }

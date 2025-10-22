@@ -1,5 +1,9 @@
 package org.example.hotel.pojo;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +23,7 @@ public class HotelDoc {
     private String pic;
     private Object distance;
     private Boolean isAD;
+    private List<String> suggestion;
 
     public HotelDoc(Hotel hotel) {
         this.id = hotel.getId();
@@ -33,6 +38,17 @@ public class HotelDoc {
         // 数据库数据转换为索引库数据
         this.location = hotel.getLatitude() + ", " + hotel.getLongitude();
         this.pic = hotel.getPic();
+        // 组装suggestion
+        if (this.business.contains("、")) {
+            // business有多个值，需要切割
+            String[] arr = this.business.split("、");
+            // 添加元素
+            this.suggestion = new ArrayList<>();
+            this.suggestion.add(this.brand);
+            Collections.addAll(this.suggestion, arr);
+        } else {
+            this.suggestion = Arrays.asList(this.brand, this.business);
+        }
     }
 
     public void setDistance(Object distance) {

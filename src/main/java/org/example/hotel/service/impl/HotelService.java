@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,10 @@ import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.example.hotel.mapper.HotelMapper;
 import org.example.hotel.pojo.Hotel;
 import org.example.hotel.pojo.HotelDoc;
@@ -183,6 +188,26 @@ public class HotelService extends ServiceImpl<HotelMapper, Hotel> implements IHo
         map.put("city", cityList);
 
         return map;
+    }
+
+    @Override
+    public List<String> suggestion(String prefix) throws IOException {
+        if (StringUtils.isBlank(prefix)) {
+            return Collections.emptyList();
+        }
+        SearchRequest request = new SearchRequest("hotel");
+        request.source().suggest(new SuggestBuilder().addSuggestion(
+                "mySuggest",
+                SuggestBuilders.
+                        completionSuggestion("suggestion")
+                        .prefix(prefix)
+                        .skipDuplicates(true)
+                        .size(10)
+        ));
+        SearchResponse searchResponse = restHighLevelClient.search(request, RequestOptions.DEFAULT);
+        Suggest suggest = searchResponse.getSuggest();
+        CompletionSuggestion mySuggest = suggest.getSuggestion("mySuggest");
+        return mySuggest.getOptions().stream().map(option -> option.getText().toString()).collect(Collectors.toList());
     }
 
 

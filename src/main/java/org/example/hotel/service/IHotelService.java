@@ -28,4 +28,11 @@ public interface IHotelService extends IService<Hotel> {
     Map<String, List<String>> filters(RequestParams params) throws IOException;
 
 
+    /**
+     * 获取补全建议
+     *
+     * @param prefix 查询参数
+     * @return 补全建议
+     */
+    List<String> suggestion(String prefix) throws IOException;
 }
